@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="meucaixa.App">
+    <Application.Resources>
+        <!-- Estilo de cores 1-->
+        <Color x:Key="Verde1">#1B2F33</Color> <!--Outer Space Crayola -->
+        <Color x:Key="Verde2">#28502E</Color> <!--Hunter Green -->
+        <Color x:Key="Verde3">#47682C</Color> <!--Dark Olive Green -->
+        <Color x:Key="Marrom1">#8C7051</Color> <!--French Bistre -->
+        <Color x:Key="Vermelho1">#EF3054</Color> <!--Red Crayola -->
+        
+        <!-- Estilo de cores 2-->
+        <Color x:Key="RichBlack">#011627</Color> <!--Outer Space Crayola -->
+        <Color x:Key="RadicalRed">#FF3366</Color> <!--Hunter Green -->
+        <Color x:Key="TiffanyBlue">#2EC4B6</Color> <!--Dark Olive Green -->
+        <Color x:Key="Cultured">#F6F7F8</Color> <!--French Bistre -->
+        <Color x:Key="Carolina">#20A4F3</Color> <!--Red Crayola -->
+    </Application.Resources>
+</Application>
