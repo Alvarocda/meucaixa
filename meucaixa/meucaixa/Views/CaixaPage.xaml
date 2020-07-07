@@ -6,23 +6,34 @@
              mc:Ignorable="d"
              x:Class="meucaixa.Views.CaixaPage"
              Visual="Material"
-             BackgroundColor="{StaticResource RichBlack}">
+             BackgroundColor="{StaticResource RichBlack}"
+             Title="{Binding Title}">
     <ContentPage.Content>
         <ScrollView>
             <StackLayout Padding="5">
-                <Button Text="Adicionar Despesa" BackgroundColor="{StaticResource RadicalRed}"/>
-                <ListView ItemsSource="{Binding Despesas}" BackgroundColor="{StaticResource Cultured}" HeightRequest="200">
+                <Button Text="Adicionar Despesa" BackgroundColor="{StaticResource RadicalRed}" Command="{Binding AddDespesaCommand}"/>
+                <ListView ItemsSource="{Binding Despesas}" BackgroundColor="{StaticResource Cultured}" HeightRequest="200" SeparatorVisibility="None" x:Name="listaDespesas">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout Orientation="Horizontal">
-                                    <Label Text="{Binding Descricao}"/>
-                                    <Label Text="{Binding Valor}"/>
+                                <StackLayout>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="{Binding Descricao, StringFormat='Descrição: {0}'}" Grid.Column="0" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center"/>
+                                        <Label Text="{Binding Valor, StringFormat='{0} R$'}" Grid.Column="1" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center" HorizontalTextAlignment="End"/>
+                                        <Button Text="X" TextColor="{StaticResource Cultured}" Grid.Column="2" BackgroundColor="{StaticResource RadicalRed}" BorderColor="{StaticResource RadicalRed}" VerticalOptions="Center" Command="{Binding Source={x:Reference listaDespesas}, Path=BindingContext.RemoveDespesaCommand}" CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                    <BoxView HeightRequest="1" Color="{StaticResource RadicalRed}" HorizontalOptions="FillAndExpand"/>
                                 </StackLayout>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                <Label Text="{Binding TotalDespesas, StringFormat='Total de despesas: {0} R$'}" TextColor="{StaticResource RadicalRed}"/>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -56,9 +67,10 @@
                     <Label Text="{Binding TotalNotas50, StringFormat='x 50 = {0} R$'}" Grid.Row="6" Grid.Column="2" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                     <Entry Text="{Binding Notas100}" Placeholder="Notas de 100" Keyboard="Numeric" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
                     <Label Text="{Binding TotalNotas100, StringFormat='x 100 = {0} R$'}" Grid.Row="7" Grid.Column="2" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
-                    <Label Text="{Binding Total, StringFormat='Total: {0} R$'}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
-                    <Label Text="{Binding TotalMenosDespesas, StringFormat='Total - Despesas: {0} R$'}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
-                    <Label Text="{Binding TotalMenosDespesasMenosProximoCaixa, StringFormat='Total - Depesas - Caixa: {0} R$'}" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
+                    <Entry Text="{Binding ValorAberturaNovoCaixa}" Placeholder="Valor do caixa de amanhã" Keyboard="Numeric" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
+                    <Label Text="{Binding Total, StringFormat='Total: {0} R$'}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
+                    <Label Text="{Binding TotalMenosDespesas, StringFormat='Total - Despesas: {0} R$'}" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
+                    <Label Text="{Binding TotalMenosDespesasMenosProximoCaixa, StringFormat='Total - Depesas - Caixa: {0} R$'}" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                 </Grid>
                 <Button Text="Salvar" BackgroundColor="{StaticResource Carolina}"/>
             </StackLayout>

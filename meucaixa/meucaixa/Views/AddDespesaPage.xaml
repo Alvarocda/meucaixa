@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="meucaixa.Views.AddDespesaPage"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource RichBlack}"
+             Visual="Material">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Informe uma descrição e um valor para a despesa" TextColor="{StaticResource Cultured}" HorizontalTextAlignment="Center"/>
+            <Entry Text="{Binding Descricao}" BackgroundColor="{StaticResource Cultured}" Placeholder="Descrição"/>
+            <Entry Text="{Binding Valor}" BackgroundColor="{StaticResource Cultured}" Placeholder="Valor" Keyboard="Numeric"/>
+            <Button Text="Adicionar Depesa" BackgroundColor="{StaticResource RadicalRed}" Command="{Binding AddDespesaCommand}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

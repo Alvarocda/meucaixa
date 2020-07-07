@@ -7,13 +7,24 @@ namespace meucaixa.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        private string title;
+        private string _title;
+        private bool _isBusy = false;
         public string Title
         {
-            get => title;
+            get => _title;
             set
             {
-                title = value;
+                _title = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
                 OnPropertyChanged();
             }
         }

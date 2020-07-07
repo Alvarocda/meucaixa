@@ -9,7 +9,7 @@ namespace meucaixa
         {
             InitializeComponent();
 
-            MainPage = new CaixaPage();
+            MainPage = new NavigationPage(new CaixaPage());
         }
 
         protected override void OnStart()

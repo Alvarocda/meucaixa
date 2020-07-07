@@ -1,4 +1,10 @@
-﻿using meucaixa.Models;
+﻿using meucaixa.DependencyServices;
+using meucaixa.Models;
+using meucaixa.Utils;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace meucaixa.ViewModels
@@ -6,91 +12,171 @@ namespace meucaixa.ViewModels
     public class CaixaViewModel : BaseViewModel
     {
 
-        Caixa _caixa;
-        public Command AddDespesa { get; }
+        private readonly Caixa _caixa;
+        private string _totalDespesas;
+        private ObservableCollection<Despesa> _despesas;
+        private readonly FormataDinheiro _formataDinheiro;
+        public Command AddDespesaCommand { get; }
+        public Command RemoveDespesaCommand { get; }
         public Command Salvar { get; }
+        private readonly ISnackbarService snackbarService;
         public CaixaViewModel()
         {
+            Title = "Fechamento de caixa " + DateTime.Now.ToString("dd/MM/yyyy");
+            _formataDinheiro = new FormataDinheiro();
             _caixa = new Caixa();
+            _despesas = new ObservableCollection<Despesa>();
+            AddDespesaCommand = new Command(async () => await AdicionaDespesa(), () => !IsBusy);
+            RemoveDespesaCommand = new Command<Despesa>(async (despesa) => await RemoveDespesa(despesa));
+            _despesas.CollectionChanged += _despesas_CollectionChanged;
+            snackbarService = DependencyService.Get<ISnackbarService>();
         }
 
+        private void _despesas_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            CalculaTotal();
+        }
+
+        private async Task RemoveDespesa(Despesa despesa)
+        {
+            bool confirmaExclusao = await Application.Current.MainPage.DisplayAlert("Aviso", "Tem certeza que deseja remover a despesa selecionada?", "Sim", "Não");
+            if (confirmaExclusao)
+            {
+                Despesas.Remove(despesa);
+                snackbarService.MostraSnackbarCurto("Despesa removida com sucesso!");
+            }
+            else
+            {
+                snackbarService.MostraSnackbarCurto("Falha ao remover despesa");
+            }
+
+        }
         private int SomaNotas2(int n) { return n * 2; }
         private int SomaNotas5(int n) { return n * 5; }
         private int SomaNotas10(int n) { return n * 10; }
         private int SomaNotas20(int n) { return n * 20; }
         private int SomaNotas50(int n) { return n * 50; }
         private int SomaNotas100(int n) { return n * 100; }
-
+        
         private void CalculaTotal()
         {
-            Total = TotalNotas2 + TotalNotas5 + TotalNotas10 + TotalNotas20 + TotalNotas50 + TotalNotas100 + TotalStelo + TotalCielo;
-            TotalMenosDespesas = Total - 125;
-            TotalMenosDespesasMenosProximoCaixa = TotalMenosDespesas - 250;
+            decimal totalStelo = 0;
+            decimal totalCielo = 0;
+            decimal total = 0;
+            decimal totalMenosDespesas = 0;
+            decimal totalMenosDespesasProximoCaixa = 0;
+            decimal valorAberturaCaixa = 0;
+            try
+            {
+                totalStelo = Convert.ToDecimal(TotalStelo);
+            }
+            catch (Exception)
+            {
+
+            }
+            try
+            {
+                totalCielo = Convert.ToDecimal(TotalCielo);
+            }
+            catch (Exception)
+            {
+
+            }
+            try
+            {
+                valorAberturaCaixa = Convert.ToDecimal(ValorAberturaNovoCaixa);
+            }
+            catch (Exception)
+            {
+
+            }
+            total = TotalNotas2 + TotalNotas5 + TotalNotas10 + TotalNotas20 + TotalNotas50 + TotalNotas100 + totalStelo + totalCielo;
+            totalMenosDespesas = total - Despesas.Sum(d => Convert.ToDecimal(d.Valor));
+            totalMenosDespesasProximoCaixa = totalMenosDespesas - valorAberturaCaixa;
+            TotalDespesas = _formataDinheiro.FormataValor(_despesas.Sum(d => Convert.ToDecimal(d.Valor)).ToString());
+            Total = _formataDinheiro.FormataValor(total.ToString()+ "00");
+            TotalMenosDespesas = _formataDinheiro.FormataValor(totalMenosDespesas.ToString());
+            TotalMenosDespesasMenosProximoCaixa = _formataDinheiro.FormataValor(totalMenosDespesasProximoCaixa.ToString());
+
 
         }
 
-        public int Notas2 {
+        public ObservableCollection<Despesa> Despesas
+        {
+            get => _despesas;
+            set
+            {
+                _despesas = value;
+                OnPropertyChanged();
+            }
+        }
+        private async Task AdicionaDespesa()
+        {
+            await Navigation.PushAsync<AddDespesaViewModel>(true, Despesas);
+        }
+        public string Notas2
+        {
             get => _caixa.Notas2;
             set
             {
                 _caixa.Notas2 = value;
                 OnPropertyChanged();
-                TotalNotas2 = SomaNotas2(Notas2);
+                TotalNotas2 = string.IsNullOrEmpty(Notas2) ? 0 : SomaNotas2(Int32.Parse(Notas2));
                 CalculaTotal();
             }
         }
-        public int Notas5
+        public string Notas5
         {
             get => _caixa.Notas5;
             set
             {
                 _caixa.Notas5 = value;
                 OnPropertyChanged();
-                TotalNotas5 = SomaNotas5(Notas5);
+                TotalNotas5 = string.IsNullOrEmpty(Notas5) ? 0 : SomaNotas5(Int32.Parse(Notas5));
                 CalculaTotal();
             }
         }
-        public int Notas10
+        public string Notas10
         {
             get => _caixa.Notas10;
             set
             {
                 _caixa.Notas10 = value;
                 OnPropertyChanged();
-                TotalNotas10 = SomaNotas10(Notas10);
+                TotalNotas10 = string.IsNullOrEmpty(Notas10) ? 0 : SomaNotas10(Int32.Parse(Notas10));
                 CalculaTotal();
             }
         }
-        public int Notas20
+        public string Notas20
         {
             get => _caixa.Notas20;
             set
             {
                 _caixa.Notas20 = value;
                 OnPropertyChanged();
-                TotalNotas20 = SomaNotas20(Notas20);
+                TotalNotas20 = string.IsNullOrEmpty(Notas20) ? 0 : SomaNotas20(Int32.Parse(Notas20));
                 CalculaTotal();
             }
         }
-        public int Notas50
+        public string Notas50
         {
             get => _caixa.Notas50;
             set
             {
                 _caixa.Notas50 = value;
                 OnPropertyChanged();
-                TotalNotas50 = SomaNotas50(Notas50);
+                TotalNotas50 = string.IsNullOrEmpty(Notas50) ? 0 : SomaNotas50(Int32.Parse(Notas50));
                 CalculaTotal();
             }
         }
-        public int Notas100
+        public string Notas100
         {
             get => _caixa.Notas100;
             set
             {
                 _caixa.Notas100 = value;
                 OnPropertyChanged();
-                TotalNotas100= SomaNotas100(Notas100);
+                TotalNotas100 = string.IsNullOrEmpty(Notas100) ? 0 : SomaNotas100(Int32.Parse(Notas100));
                 CalculaTotal();
             }
         }
@@ -149,7 +235,7 @@ namespace meucaixa.ViewModels
                 OnPropertyChanged();
             }
         }
-        public decimal TotalCielo
+        public string TotalCielo
         {
             get => _caixa.TotalCielo;
             set
@@ -159,7 +245,7 @@ namespace meucaixa.ViewModels
                 CalculaTotal();
             }
         }
-        public decimal TotalStelo
+        public string TotalStelo
         {
             get => _caixa.TotalStelo;
             set
@@ -170,7 +256,7 @@ namespace meucaixa.ViewModels
             }
         }
 
-        public decimal Total
+        public string Total
         {
             get => _caixa.Total;
             set
@@ -179,7 +265,7 @@ namespace meucaixa.ViewModels
                 OnPropertyChanged();
             }
         }
-        public decimal TotalMenosDespesas
+        public string TotalMenosDespesas
         {
             get => _caixa.TotalMenosDespesas;
             set
@@ -188,12 +274,30 @@ namespace meucaixa.ViewModels
                 OnPropertyChanged();
             }
         }
-        public decimal TotalMenosDespesasMenosProximoCaixa
+        public string TotalMenosDespesasMenosProximoCaixa
         {
             get => _caixa.TotalMenosDespesasMenosProximoCaixa;
             set
             {
                 _caixa.TotalMenosDespesasMenosProximoCaixa = value;
+                OnPropertyChanged();
+            }
+        }
+        public string ValorAberturaNovoCaixa
+        {
+            get => _caixa.ValorAberturaNovoCaixa;
+            set
+            {
+                _caixa.ValorAberturaNovoCaixa = _formataDinheiro.FormataValor(value);
+                OnPropertyChanged();
+            }
+        }
+        public string TotalDespesas
+        {
+            get => _totalDespesas;
+            set
+            {
+                _totalDespesas = value;
                 OnPropertyChanged();
             }
         }

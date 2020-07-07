@@ -3,6 +3,8 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using System.Globalization;
+using System.Threading;
 using Xamarin.Forms;
 
 namespace meucaixa.Droid
@@ -14,8 +16,10 @@ namespace meucaixa.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
-
             base.OnCreate(savedInstanceState);
+            var cultura = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = cultura;
+            Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, savedInstanceState);
             FormsMaterial.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
