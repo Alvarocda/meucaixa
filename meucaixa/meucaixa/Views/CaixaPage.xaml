@@ -53,8 +53,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="170"/>
                     </Grid.ColumnDefinitions>
-                    <Entry Text="{Binding TotalCielo}" Placeholder="Maquina CIELO" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
-                    <Entry Text="{Binding TotalStelo}" Placeholder="Maquina STELO" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
+                    <Entry Text="{Binding TotalCielo}" Placeholder="Maquina CIELO" Keyboard="Numeric" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
+                    <Entry Text="{Binding TotalStelo}" Placeholder="Maquina STELO" Keyboard="Numeric" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
                     <Entry Text="{Binding Notas2}" Placeholder="Notas de 2" Keyboard="Numeric" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
                     <Label Text="{Binding TotalNotas2, StringFormat='x 2 = {0} R$'}" Grid.Row="2" Grid.Column="2" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                     <Entry Text="{Binding Notas5}" Placeholder="Notas de 5" Keyboard="Numeric" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>

@@ -1,14 +1,14 @@
 ﻿using Android.App;
 using Android.Support.Design.Widget;
-using meucaixa.DependencyServices;
 using meucaixa.Droid.DependencyService;
+using meucaixa.Interfaces;
 using Plugin.CurrentActivity;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(SnackbarService))]
 namespace meucaixa.Droid.DependencyService
 {
-    public class SnackbarService : ISnackbarService
+    public class SnackbarService : ISnackbar
     {
         public void MostraSnackbarLongo(string mensagem)
         {

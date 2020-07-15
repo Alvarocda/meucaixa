@@ -31,7 +31,6 @@ namespace meucaixa.Services
             Type viewType = Type.GetType(viewTypeName + "," + namespaceName + ".dll");
 
             Page page = Activator.CreateInstance(viewType) as Page;
-
             var viewModel = Activator.CreateInstance(viewModelType, args);
 
             if (page != null)

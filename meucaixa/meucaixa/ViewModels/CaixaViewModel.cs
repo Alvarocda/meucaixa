@@ -1,4 +1,4 @@
-﻿using meucaixa.DependencyServices;
+﻿using meucaixa.Interfaces;
 using meucaixa.Models;
 using meucaixa.Utils;
 using System;
@@ -19,7 +19,7 @@ namespace meucaixa.ViewModels
         public Command AddDespesaCommand { get; }
         public Command RemoveDespesaCommand { get; }
         public Command Salvar { get; }
-        private readonly ISnackbarService snackbarService;
+        private readonly ISnackbar _snackbar;
         public CaixaViewModel()
         {
             Title = "Fechamento de caixa " + DateTime.Now.ToString("dd/MM/yyyy");
@@ -29,7 +29,7 @@ namespace meucaixa.ViewModels
             AddDespesaCommand = new Command(async () => await AdicionaDespesa(), () => !IsBusy);
             RemoveDespesaCommand = new Command<Despesa>(async (despesa) => await RemoveDespesa(despesa));
             _despesas.CollectionChanged += _despesas_CollectionChanged;
-            snackbarService = DependencyService.Get<ISnackbarService>();
+            _snackbar = DependencyService.Get<ISnackbar>();
         }
 
         private void _despesas_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -43,11 +43,11 @@ namespace meucaixa.ViewModels
             if (confirmaExclusao)
             {
                 Despesas.Remove(despesa);
-                snackbarService.MostraSnackbarCurto("Despesa removida com sucesso!");
+                _snackbar.MostraSnackbarCurto("Despesa removida com sucesso!");
             }
             else
             {
-                snackbarService.MostraSnackbarCurto("Falha ao remover despesa");
+                _snackbar.MostraSnackbarCurto("Falha ao remover despesa");
             }
 
         }
@@ -94,9 +94,9 @@ namespace meucaixa.ViewModels
             totalMenosDespesas = total - Despesas.Sum(d => Convert.ToDecimal(d.Valor));
             totalMenosDespesasProximoCaixa = totalMenosDespesas - valorAberturaCaixa;
             TotalDespesas = _formataDinheiro.FormataValor(_despesas.Sum(d => Convert.ToDecimal(d.Valor)).ToString());
-            Total = _formataDinheiro.FormataValor(total.ToString()+ "00");
-            TotalMenosDespesas = _formataDinheiro.FormataValor(totalMenosDespesas.ToString());
-            TotalMenosDespesasMenosProximoCaixa = _formataDinheiro.FormataValor(totalMenosDespesasProximoCaixa.ToString());
+            Total = total.ToString();
+            TotalMenosDespesas = totalMenosDespesas.ToString();
+            TotalMenosDespesasMenosProximoCaixa = totalMenosDespesasProximoCaixa.ToString();
 
 
         }
@@ -240,7 +240,7 @@ namespace meucaixa.ViewModels
             get => _caixa.TotalCielo;
             set
             {
-                _caixa.TotalCielo = value;
+                _caixa.TotalCielo = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
                 CalculaTotal();
             }
@@ -250,7 +250,7 @@ namespace meucaixa.ViewModels
             get => _caixa.TotalStelo;
             set
             {
-                _caixa.TotalStelo = value;
+                _caixa.TotalStelo = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
                 CalculaTotal();
             }
@@ -261,7 +261,7 @@ namespace meucaixa.ViewModels
             get => _caixa.Total;
             set
             {
-                _caixa.Total = value;
+                _caixa.Total = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
             }
         }
@@ -270,7 +270,7 @@ namespace meucaixa.ViewModels
             get => _caixa.TotalMenosDespesas;
             set
             {
-                _caixa.TotalMenosDespesas = value;
+                _caixa.TotalMenosDespesas = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
             }
         }
@@ -279,7 +279,7 @@ namespace meucaixa.ViewModels
             get => _caixa.TotalMenosDespesasMenosProximoCaixa;
             set
             {
-                _caixa.TotalMenosDespesasMenosProximoCaixa = value;
+                _caixa.TotalMenosDespesasMenosProximoCaixa = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
             }
         }
@@ -290,6 +290,7 @@ namespace meucaixa.ViewModels
             {
                 _caixa.ValorAberturaNovoCaixa = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
+                CalculaTotal();
             }
         }
         public string TotalDespesas
@@ -297,7 +298,7 @@ namespace meucaixa.ViewModels
             get => _totalDespesas;
             set
             {
-                _totalDespesas = value;
+                _totalDespesas = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
             }
         }

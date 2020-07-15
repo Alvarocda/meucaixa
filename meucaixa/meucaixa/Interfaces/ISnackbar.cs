@@ -1,6 +1,6 @@
-﻿namespace meucaixa.DependencyServices
+﻿namespace meucaixa.Interfaces
 {
-    public interface ISnackbarService
+    public interface ISnackbar
     {
         void MostraSnackbarLongo(string mensagem);
         void MostraSnackbarCurto(string mensagem);

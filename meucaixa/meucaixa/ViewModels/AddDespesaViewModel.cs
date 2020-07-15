@@ -1,4 +1,4 @@
-﻿using meucaixa.DependencyServices;
+﻿using meucaixa.Interfaces;
 using meucaixa.Models;
 using meucaixa.Utils;
 using System;
@@ -14,11 +14,13 @@ namespace meucaixa.ViewModels
         public Command AddDespesaCommand { get; }
         private readonly Despesa _despesa;
         private readonly FormataDinheiro _formataDinheiro;
-        readonly ISnackbarService _snackbar;
+        readonly ISnackbar _snackbar;
+        readonly IDespesas _despesaService;
         public AddDespesaViewModel(ObservableCollection<Despesa> despesas)
         {
-            _snackbar = DependencyService.Get<ISnackbarService>();
             _despesas = despesas;
+            _despesaService = App.IoCContainer.GetInstance<IDespesas>();
+            _snackbar = DependencyService.Get<ISnackbar>();
             AddDespesaCommand = new Command(async () => await AddDespesa(), () => !IsBusy);
             _formataDinheiro = new FormataDinheiro();
             _despesa = new Despesa();
