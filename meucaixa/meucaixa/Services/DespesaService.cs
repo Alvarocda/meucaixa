@@ -1,16 +1,40 @@
 ﻿using meucaixa.Interfaces;
-using System;
+using meucaixa.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace meucaixa.Services
 {
     public class DespesaService : IDespesas
     {
-        public Task SalvaNoBanco<T>(T obj)
+        readonly IDespesasRepository _despesasRepository;
+        public DespesaService(IDespesasRepository despesasRepository)
         {
-            throw new NotImplementedException();
+            _despesasRepository = despesasRepository;
+        }
+        public async Task SalvaDespesasAsync(Caixa caixa)
+        {
+            foreach(Despesa despesa in caixa.Despesas)
+            {
+                despesa.CaixaId = caixa.Id;
+            }
+            await _despesasRepository.AdicionaDespesaAsync(caixa.Despesas);
+        }
+
+        public async Task AlteraDespesaAsync(Despesa despesa)
+        {
+            await _despesasRepository.AlteraDespesaAsync(despesa);
+        }
+
+        public async Task<List<Despesa>> ListaTodasDespesasAsync(int CaixaId = 0)
+        {
+            return await _despesasRepository.ListaDespesas(CaixaId);
+        }
+
+        public async Task<Despesa> SelecionaDespesaAsync(int codDespesa)
+        {
+            return await _despesasRepository.SelecionaDespesa(codDespesa);
         }
     }
 }

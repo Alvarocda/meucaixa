@@ -8,7 +8,7 @@ namespace meucaixa.ViewModels
     public class BaseViewModel : INotifyPropertyChanged
     {
         private string _title;
-        private bool _isBusy = false;
+
         public string Title
         {
             get => _title;
@@ -19,15 +19,7 @@ namespace meucaixa.ViewModels
             }
         }
 
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set
-            {
-                _isBusy = value;
-                OnPropertyChanged();
-            }
-        }
+
         public virtual Task LoadAsync(object[] args) => Task.FromResult(true);
 
         public virtual Task LoadAsync() => Task.FromResult(true);

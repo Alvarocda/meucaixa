@@ -12,22 +12,25 @@
         <ScrollView>
             <StackLayout Padding="5">
                 <Button Text="Adicionar Despesa" BackgroundColor="{StaticResource RadicalRed}" Command="{Binding AddDespesaCommand}"/>
-                <ListView ItemsSource="{Binding Despesas}" BackgroundColor="{StaticResource Cultured}" HeightRequest="200" SeparatorVisibility="None" x:Name="listaDespesas">
+                <ListView ItemsSource="{Binding Despesas}" HasUnevenRows="True" BackgroundColor="{StaticResource Cultured}" HeightRequest="200" SeparatorVisibility="None" x:Name="listaDespesas">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout>
+                                <StackLayout Spacing="0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="150"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="50"/>
                                         </Grid.ColumnDefinitions>
-                                        <Label Text="{Binding Descricao, StringFormat='Descrição: {0}'}" Grid.Column="0" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center"/>
-                                        <Label Text="{Binding Valor, StringFormat='{0} R$'}" Grid.Column="1" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center" HorizontalTextAlignment="End"/>
-                                        <Button Text="X" TextColor="{StaticResource Cultured}" Grid.Column="2" BackgroundColor="{StaticResource RadicalRed}" BorderColor="{StaticResource RadicalRed}" VerticalOptions="Center" Command="{Binding Source={x:Reference listaDespesas}, Path=BindingContext.RemoveDespesaCommand}" CommandParameter="{Binding .}"/>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="45"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Text="{Binding Descricao}" FontSize="20" Grid.Column="0" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center"/>
+                                        <Label Text="{Binding Valor, StringFormat='{0} R$'}" FontSize="20" Grid.Column="1" TextColor="{StaticResource RadicalRed}" VerticalTextAlignment="Center" HorizontalTextAlignment="End"/>
+                                        <Button CornerRadius="0" Text="X" TextColor="{StaticResource Cultured}" Grid.Column="2" BackgroundColor="{StaticResource RadicalRed}" BorderColor="{StaticResource RadicalRed}" HeightRequest="100" Command="{Binding Source={x:Reference listaDespesas}, Path=BindingContext.RemoveDespesaCommand}" CommandParameter="{Binding .}" Margin="0" Padding="0"/>
                                     </Grid>
-                                    <BoxView HeightRequest="1" Color="{StaticResource RadicalRed}" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView HeightRequest="1" Color="{StaticResource RadicalRed}" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand"/>
                                 </StackLayout>
                             </ViewCell>
                         </DataTemplate>
@@ -72,7 +75,7 @@
                     <Label Text="{Binding TotalMenosDespesas, StringFormat='Total - Despesas: {0} R$'}" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                     <Label Text="{Binding TotalMenosDespesasMenosProximoCaixa, StringFormat='Total - Depesas - Caixa: {0} R$'}" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                 </Grid>
-                <Button Text="Salvar" BackgroundColor="{StaticResource Carolina}"/>
+                <Button Text="Salvar" Command="{Binding SalvarCaixaCommand}" BackgroundColor="{StaticResource Carolina}"/>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

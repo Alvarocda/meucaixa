@@ -11,15 +11,14 @@ namespace meucaixa.ViewModels
     class AddDespesaViewModel : BaseViewModel
     {
         private readonly ObservableCollection<Despesa> _despesas;
+        private bool _isBusy = false;
         public Command AddDespesaCommand { get; }
         private readonly Despesa _despesa;
         private readonly FormataDinheiro _formataDinheiro;
         readonly ISnackbar _snackbar;
-        readonly IDespesas _despesaService;
         public AddDespesaViewModel(ObservableCollection<Despesa> despesas)
         {
             _despesas = despesas;
-            _despesaService = App.IoCContainer.GetInstance<IDespesas>();
             _snackbar = DependencyService.Get<ISnackbar>();
             AddDespesaCommand = new Command(async () => await AddDespesa(), () => !IsBusy);
             _formataDinheiro = new FormataDinheiro();
@@ -45,7 +44,7 @@ namespace meucaixa.ViewModels
             {
                 await Application.Current.MainPage.DisplayAlert("Erro", "Por favor, informe um valor valido", "OK");
             }
-            
+
         }
 
         public string Descricao
@@ -63,7 +62,16 @@ namespace meucaixa.ViewModels
             get => _despesa.Valor;
             set
             {
-                _despesa.Valor =  _formataDinheiro.FormataValor(value);
+                _despesa.Valor = _formataDinheiro.FormataValor(value);
+                OnPropertyChanged();
+            }
+        }
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
                 OnPropertyChanged();
             }
         }

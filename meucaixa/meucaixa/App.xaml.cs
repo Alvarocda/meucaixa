@@ -1,10 +1,10 @@
 ﻿using meucaixa.Interfaces;
-using meucaixa.Models;
+using meucaixa.Repositories;
 using meucaixa.Services;
 using meucaixa.Views;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 namespace meucaixa
 {
@@ -14,9 +14,13 @@ namespace meucaixa
         public App()
         {
             InitializeComponent();
-            App.IoCContainer.Register<ICaixa, CaixaService>(Lifestyle.Transient);
-            App.IoCContainer.Register<IDespesas, DespesaService>(Lifestyle.Transient);
-            
+            App.IoCContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            App.IoCContainer.Register<ICaixa, CaixaService>(Lifestyle.Scoped);
+            App.IoCContainer.Register<IDespesas, DespesaService>(Lifestyle.Scoped);
+            App.IoCContainer.Register<ICaixaRepository, CaixaRepository>(Lifestyle.Scoped);
+            App.IoCContainer.Register<IDespesasRepository, DespesasRepository>(Lifestyle.Scoped);
+            /* DependencyService.Register<ICaixa, CaixaService>();
+            DependencyService.Register<IDespesas, DespesaService>();*/
             MainPage = new NavigationPage(new CaixaPage());
         }
         public static Container IoCContainer
@@ -26,7 +30,6 @@ namespace meucaixa
         }
         protected override void OnStart()
         {
-            
         }
 
         protected override void OnSleep()

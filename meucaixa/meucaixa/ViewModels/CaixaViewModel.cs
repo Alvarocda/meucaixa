@@ -1,8 +1,10 @@
 ﻿using meucaixa.Interfaces;
 using meucaixa.Models;
 using meucaixa.Utils;
+using SimpleInjector.Lifestyles;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -11,28 +13,39 @@ namespace meucaixa.ViewModels
 {
     public class CaixaViewModel : BaseViewModel
     {
-
+        private bool _isBusy = false;
         private readonly Caixa _caixa;
+        private readonly ICaixa _caixaService;
+        private readonly IDespesas _despesasService;
         private string _totalDespesas;
-        private ObservableCollection<Despesa> _despesas;
         private readonly FormataDinheiro _formataDinheiro;
         public Command AddDespesaCommand { get; }
+        public Command SalvarCaixaCommand { get; }
         public Command RemoveDespesaCommand { get; }
         public Command Salvar { get; }
         private readonly ISnackbar _snackbar;
         public CaixaViewModel()
         {
             Title = "Fechamento de caixa " + DateTime.Now.ToString("dd/MM/yyyy");
-            _formataDinheiro = new FormataDinheiro();
-            _caixa = new Caixa();
-            _despesas = new ObservableCollection<Despesa>();
             AddDespesaCommand = new Command(async () => await AdicionaDespesa(), () => !IsBusy);
             RemoveDespesaCommand = new Command<Despesa>(async (despesa) => await RemoveDespesa(despesa));
-            _despesas.CollectionChanged += _despesas_CollectionChanged;
+            SalvarCaixaCommand = new Command(async () => await SalvaDespesa(), () => !IsBusy);
+
+            using (AsyncScopedLifestyle.BeginScope(App.IoCContainer))
+            {
+                _caixaService = App.IoCContainer.GetInstance<ICaixa>();
+                _despesasService = App.IoCContainer.GetInstance<IDespesas>();
+            }
             _snackbar = DependencyService.Get<ISnackbar>();
+
+            _formataDinheiro = new FormataDinheiro();
+            _caixa = new Caixa();
+            _caixa.Despesas = new ObservableCollection<Despesa>();
+
+            _caixa.Despesas.CollectionChanged += _despesas_CollectionChanged;
         }
 
-        private void _despesas_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void _despesas_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CalculaTotal();
         }
@@ -49,7 +62,13 @@ namespace meucaixa.ViewModels
             {
                 _snackbar.MostraSnackbarCurto("Falha ao remover despesa");
             }
+        }
 
+        private async Task SalvaDespesa()
+        {
+            await _caixaService.SalvaCaixa(_caixa);
+            await _despesasService.SalvaDespesasAsync(_caixa);
+            Console.WriteLine(_caixa.Id);
         }
         private int SomaNotas2(int n) { return n * 2; }
         private int SomaNotas5(int n) { return n * 5; }
@@ -57,7 +76,7 @@ namespace meucaixa.ViewModels
         private int SomaNotas20(int n) { return n * 20; }
         private int SomaNotas50(int n) { return n * 50; }
         private int SomaNotas100(int n) { return n * 100; }
-        
+
         private void CalculaTotal()
         {
             decimal totalStelo = 0;
@@ -93,20 +112,18 @@ namespace meucaixa.ViewModels
             total = TotalNotas2 + TotalNotas5 + TotalNotas10 + TotalNotas20 + TotalNotas50 + TotalNotas100 + totalStelo + totalCielo;
             totalMenosDespesas = total - Despesas.Sum(d => Convert.ToDecimal(d.Valor));
             totalMenosDespesasProximoCaixa = totalMenosDespesas - valorAberturaCaixa;
-            TotalDespesas = _formataDinheiro.FormataValor(_despesas.Sum(d => Convert.ToDecimal(d.Valor)).ToString());
+            TotalDespesas = _formataDinheiro.FormataValor(_caixa.Despesas.Sum(d => Convert.ToDecimal(d.Valor)).ToString());
             Total = total.ToString();
             TotalMenosDespesas = totalMenosDespesas.ToString();
             TotalMenosDespesasMenosProximoCaixa = totalMenosDespesasProximoCaixa.ToString();
-
-
         }
 
         public ObservableCollection<Despesa> Despesas
         {
-            get => _despesas;
+            get => _caixa.Despesas;
             set
             {
-                _despesas = value;
+                _caixa.Despesas = value;
                 OnPropertyChanged();
             }
         }
@@ -300,6 +317,18 @@ namespace meucaixa.ViewModels
             {
                 _totalDespesas = _formataDinheiro.FormataValor(value);
                 OnPropertyChanged();
+            }
+        }
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged();
+                AddDespesaCommand.ChangeCanExecute();
+                RemoveDespesaCommand.ChangeCanExecute();
+                SalvarCaixaCommand.ChangeCanExecute();
             }
         }
     }

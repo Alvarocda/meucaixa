@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace meucaixa.Models
 {
     public class Caixa
     {
         public int Id { get; set; }
-        public DateTime DataCaixa { get; set; }
+        public DateTimeOffset DataCaixa { get; set; } = DateTimeOffset.Now;
         public string Notas2 { get; set; }
         public int TotalNotas2 { get; set; }
         public string Notas5 { get; set; }
@@ -25,6 +25,6 @@ namespace meucaixa.Models
         public string TotalMenosDespesasMenosProximoCaixa { get; set; }
         public string TotalCielo { get; set; }
         public string TotalStelo { get; set; }
-        public List<Despesa> Despesas { get; set; }
+        public ObservableCollection<Despesa> Despesas { get; set; }
     }
 }
