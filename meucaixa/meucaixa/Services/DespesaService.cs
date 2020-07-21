@@ -2,7 +2,6 @@
 using meucaixa.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
 
 namespace meucaixa.Services
 {
@@ -15,7 +14,7 @@ namespace meucaixa.Services
         }
         public async Task SalvaDespesasAsync(Caixa caixa)
         {
-            foreach(Despesa despesa in caixa.Despesas)
+            foreach (Despesa despesa in caixa.Despesas)
             {
                 despesa.CaixaId = caixa.Id;
             }

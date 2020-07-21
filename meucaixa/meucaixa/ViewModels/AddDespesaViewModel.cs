@@ -12,6 +12,8 @@ namespace meucaixa.ViewModels
     {
         private readonly ObservableCollection<Despesa> _despesas;
         private bool _isBusy = false;
+
+
         public Command AddDespesaCommand { get; }
         private readonly Despesa _despesa;
         private readonly FormataDinheiro _formataDinheiro;

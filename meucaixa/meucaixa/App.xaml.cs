@@ -19,6 +19,7 @@ namespace meucaixa
             App.IoCContainer.Register<IDespesas, DespesaService>(Lifestyle.Scoped);
             App.IoCContainer.Register<ICaixaRepository, CaixaRepository>(Lifestyle.Scoped);
             App.IoCContainer.Register<IDespesasRepository, DespesasRepository>(Lifestyle.Scoped);
+            App.IoCContainer.Register<IPermissao, PermissaoService>(Lifestyle.Scoped);
             /* DependencyService.Register<ICaixa, CaixaService>();
             DependencyService.Register<IDespesas, DespesaService>();*/
             MainPage = new NavigationPage(new CaixaPage());

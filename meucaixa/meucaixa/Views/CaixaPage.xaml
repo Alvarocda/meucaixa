@@ -72,8 +72,8 @@
                     <Label Text="{Binding TotalNotas100, StringFormat='x 100 = {0} R$'}" Grid.Row="7" Grid.Column="2" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
                     <Entry Text="{Binding ValorAberturaNovoCaixa}" Placeholder="Valor do caixa de amanhã" Keyboard="Numeric" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Cultured}"/>
                     <Label Text="{Binding Total, StringFormat='Total: {0} R$'}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
-                    <Label Text="{Binding TotalMenosDespesas, StringFormat='Total - Despesas: {0} R$'}" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
-                    <Label Text="{Binding TotalMenosDespesasMenosProximoCaixa, StringFormat='Total - Depesas - Caixa: {0} R$'}" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{StaticResource Cultured}"/>
+                    <Label Text="{Binding TotalMenosDespesas, StringFormat='Total - Despesas: {0} R$'}" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{Binding CorTotalMenosDespesa}"/>
+                    <Label Text="{Binding TotalMenosDespesasMenosProximoCaixa, StringFormat='Total - Depesas - Caixa: {0} R$'}" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Large" VerticalTextAlignment="Center" TextColor="{Binding CorTotalMenosDespesaMenosProximoCaixa}"/>
                 </Grid>
                 <Button Text="Salvar" Command="{Binding SalvarCaixaCommand}" BackgroundColor="{StaticResource Carolina}"/>
             </StackLayout>

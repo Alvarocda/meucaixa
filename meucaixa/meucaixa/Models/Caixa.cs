@@ -5,8 +5,10 @@ namespace meucaixa.Models
 {
     public class Caixa
     {
+        [SQLite.PrimaryKey]
+        [SQLite.AutoIncrement]
         public int Id { get; set; }
-        public DateTimeOffset DataCaixa { get; set; } = DateTimeOffset.Now;
+        public DateTime DataCaixa { get; set; } = DateTime.Now;
         public string Notas2 { get; set; }
         public int TotalNotas2 { get; set; }
         public string Notas5 { get; set; }
@@ -25,6 +27,7 @@ namespace meucaixa.Models
         public string TotalMenosDespesasMenosProximoCaixa { get; set; }
         public string TotalCielo { get; set; }
         public string TotalStelo { get; set; }
+        [SQLite.Ignore]
         public ObservableCollection<Despesa> Despesas { get; set; }
     }
 }

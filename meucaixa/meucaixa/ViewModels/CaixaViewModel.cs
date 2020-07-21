@@ -3,6 +3,7 @@ using meucaixa.Models;
 using meucaixa.Utils;
 using SimpleInjector.Lifestyles;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -19,6 +20,10 @@ namespace meucaixa.ViewModels
         private readonly IDespesas _despesasService;
         private string _totalDespesas;
         private readonly FormataDinheiro _formataDinheiro;
+
+        private Color _corTotalMenosDespesa = Color.FromHex("#F6F7F8");
+        private Color _corTotalMenosDespesaMenosProximoCaixa = Color.FromHex("#F6F7F8");
+
         public Command AddDespesaCommand { get; }
         public Command SalvarCaixaCommand { get; }
         public Command RemoveDespesaCommand { get; }
@@ -66,9 +71,17 @@ namespace meucaixa.ViewModels
 
         private async Task SalvaDespesa()
         {
-            await _caixaService.SalvaCaixa(_caixa);
-            await _despesasService.SalvaDespesasAsync(_caixa);
-            Console.WriteLine(_caixa.Id);
+            List<Caixa> teste = await _caixaService.ListaCaixas();
+            try
+            {
+                await _caixaService.SalvaCaixa(_caixa);
+                await _despesasService.SalvaDespesasAsync(_caixa);
+                _snackbar.MostraSnackbarCurto("Caixa lançado com sucesso!");
+            }
+            catch (Exception e)
+            {
+                await Application.Current.MainPage.DisplayAlert("OK", "Erro " + e.Message, "OK");
+            }
         }
         private int SomaNotas2(int n) { return n * 2; }
         private int SomaNotas5(int n) { return n * 5; }
@@ -112,6 +125,22 @@ namespace meucaixa.ViewModels
             total = TotalNotas2 + TotalNotas5 + TotalNotas10 + TotalNotas20 + TotalNotas50 + TotalNotas100 + totalStelo + totalCielo;
             totalMenosDespesas = total - Despesas.Sum(d => Convert.ToDecimal(d.Valor));
             totalMenosDespesasProximoCaixa = totalMenosDespesas - valorAberturaCaixa;
+            if(totalMenosDespesas <= 0)
+            {
+                CorTotalMenosDespesa = Color.Red;
+            }
+            else
+            {
+                CorTotalMenosDespesa = Color.FromHex("#F6F7F8");
+            }
+            if (totalMenosDespesasProximoCaixa <= 0)
+            {
+                CorTotalMenosDespesaMenosProximoCaixa = Color.Red;
+            }
+            else
+            {
+                CorTotalMenosDespesaMenosProximoCaixa = Color.FromHex("#F6F7F8");
+            }
             TotalDespesas = _formataDinheiro.FormataValor(_caixa.Despesas.Sum(d => Convert.ToDecimal(d.Valor)).ToString());
             Total = total.ToString();
             TotalMenosDespesas = totalMenosDespesas.ToString();
@@ -329,6 +358,24 @@ namespace meucaixa.ViewModels
                 AddDespesaCommand.ChangeCanExecute();
                 RemoveDespesaCommand.ChangeCanExecute();
                 SalvarCaixaCommand.ChangeCanExecute();
+            }
+        }
+        public Color CorTotalMenosDespesa
+        {
+            get => _corTotalMenosDespesa;
+            set {
+                _corTotalMenosDespesa = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Color CorTotalMenosDespesaMenosProximoCaixa
+        {
+            get => _corTotalMenosDespesaMenosProximoCaixa;
+            set
+            {
+                _corTotalMenosDespesaMenosProximoCaixa = value;
+                OnPropertyChanged();
             }
         }
     }
