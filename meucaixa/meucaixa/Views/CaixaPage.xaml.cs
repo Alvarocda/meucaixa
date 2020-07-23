@@ -1,6 +1,4 @@
-﻿
-using meucaixa.ViewModels;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace meucaixa.Views
@@ -11,7 +9,6 @@ namespace meucaixa.Views
         public CaixaPage()
         {
             InitializeComponent();
-            BindingContext = new CaixaViewModel();
         }
     }
 }

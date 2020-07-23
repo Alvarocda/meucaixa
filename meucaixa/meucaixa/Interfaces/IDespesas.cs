@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace meucaixa.Interfaces
 {
-    public interface IDespesas
+    public interface IDespesa
     {
         Task SalvaDespesasAsync(Caixa caixa);
         Task AlteraDespesaAsync(Despesa despesa);

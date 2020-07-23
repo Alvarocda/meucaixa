@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace meucaixa.Services
 {
-    public class DespesaService : IDespesas
+    public class DespesaService : IDespesa
     {
-        readonly IDespesasRepository _despesasRepository;
-        public DespesaService(IDespesasRepository despesasRepository)
+        readonly IDespesaRepository<Despesa> _despesasRepository;
+        public DespesaService(IDespesaRepository<Despesa> despesasRepository)
         {
             _despesasRepository = despesasRepository;
         }
@@ -18,22 +18,26 @@ namespace meucaixa.Services
             {
                 despesa.CaixaId = caixa.Id;
             }
-            await _despesasRepository.AdicionaDespesaAsync(caixa.Despesas);
+            await _despesasRepository.AdicionaDespesas(caixa.Despesas);
         }
 
         public async Task AlteraDespesaAsync(Despesa despesa)
         {
-            await _despesasRepository.AlteraDespesaAsync(despesa);
+            await _despesasRepository.AlteraRegistro(despesa);
         }
 
-        public async Task<List<Despesa>> ListaTodasDespesasAsync(int CaixaId = 0)
+        public async Task<List<Despesa>> ListaTodasDespesasAsync(int caixaId = 0)
         {
-            return await _despesasRepository.ListaDespesas(CaixaId);
+            if (caixaId != 0)
+            {
+                return await _despesasRepository.Lista(d => d.CaixaId == caixaId);
+            }
+            return await _despesasRepository.Lista();
         }
 
         public async Task<Despesa> SelecionaDespesaAsync(int codDespesa)
         {
-            return await _despesasRepository.SelecionaDespesa(codDespesa);
+            return await _despesasRepository.SelecionaPorId(codDespesa);
         }
     }
 }

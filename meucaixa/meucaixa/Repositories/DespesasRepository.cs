@@ -1,13 +1,15 @@
 ﻿using meucaixa.Interfaces;
 using meucaixa.Models;
 using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace meucaixa.Repositories
 {
-    class DespesasRepository : IDespesasRepository
+    class DespesasRepository : IDespesaRepository<Despesa>
     {
         readonly SQLiteAsyncConnection _sQLiteAsyncConnection;
         public DespesasRepository()
@@ -15,31 +17,33 @@ namespace meucaixa.Repositories
             _sQLiteAsyncConnection = new SQLiteAsyncConnection(AppConstantes.DatabasePath);
             _sQLiteAsyncConnection.CreateTableAsync<Despesa>();
         }
-        public async Task AdicionaDespesaAsync(ObservableCollection<Despesa> despesa)
+
+        public async Task AdicionaDespesas(ObservableCollection<Despesa> despesas)
         {
-            await _sQLiteAsyncConnection.InsertAllAsync(despesa);
+            await _sQLiteAsyncConnection.InsertAllAsync(despesas);
         }
 
-        public async Task AlteraDespesaAsync(Despesa despesa)
+        public async Task AlteraRegistro(Despesa entity)
         {
-            await _sQLiteAsyncConnection.UpdateAsync(despesa);
+            await _sQLiteAsyncConnection.UpdateAsync(entity);
         }
 
-        public async Task<List<Despesa>> ListaDespesas(int caixaId = 0)
+        public async Task<List<Despesa>> Lista()
         {
-            if (caixaId > 0)
-            {
-                return await _sQLiteAsyncConnection.Table<Despesa>()
-                    .Where(d => d.CaixaId == caixaId)
-                    .ToListAsync();
-            }
-            return await _sQLiteAsyncConnection
-                .Table<Despesa>()
-                .ToListAsync();
+            return await _sQLiteAsyncConnection.Table<Despesa>().ToListAsync();
         }
 
+        public async Task<List<Despesa>> Lista(Expression<Func<Despesa, bool>> predicate)
+        {
+            return await _sQLiteAsyncConnection.Table<Despesa>().Where(predicate).ToListAsync();
+        }
 
-        public async Task<Despesa> SelecionaDespesa(int id)
+        public async Task<Despesa> PrimeiroOuDefault(Expression<Func<Despesa, bool>> predicate)
+        {
+            return await _sQLiteAsyncConnection.Table<Despesa>().FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<Despesa> SelecionaPorId(int id)
         {
             return await _sQLiteAsyncConnection.Table<Despesa>().FirstOrDefaultAsync(d => d.Id == id);
         }

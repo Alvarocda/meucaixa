@@ -8,9 +8,9 @@ namespace meucaixa.Services
 {
     class CaixaService : ICaixa
     {
-        readonly ICaixaRepository _caixaRepository;
+        readonly IRepository<Caixa> _caixaRepository;
         readonly IPermissao _permissao;
-        public CaixaService(ICaixaRepository caixaRepository, IPermissao permissao)
+        public CaixaService(IRepository<Caixa> caixaRepository, IPermissao permissao)
         {
             _caixaRepository = caixaRepository;
             _permissao = permissao;
@@ -18,12 +18,16 @@ namespace meucaixa.Services
 
         public async Task AtualizaCaixa(Caixa caixa)
         {
-            await _caixaRepository.AlteraCaixaAsync(caixa);
+            await _caixaRepository.AlteraRegistro(caixa);
         }
 
         public async Task<List<Caixa>> ListaCaixas(int mes = 99)
         {
-            return await _caixaRepository.ListaCaixasAsync(mes);
+            if (mes < 99)
+            {
+                return await _caixaRepository.Lista(l => l.DataCaixa.Month == mes);
+            }
+            return await _caixaRepository.Lista();
         }
 
         public async Task SalvaCaixa(Caixa caixa)
@@ -31,7 +35,7 @@ namespace meucaixa.Services
             bool permissaoEscrita = await _permissao.VerificaESolicitaPermissao(new Permissions.StorageWrite());
             bool permissaoLeitura = await _permissao.VerificaESolicitaPermissao(new Permissions.StorageRead());
             if (permissaoEscrita && permissaoLeitura)
-                await _caixaRepository.AdicionaCaixaAsync(caixa);
+                await _caixaRepository.AdicionaRegistro(caixa);
             else
                 return;
         }

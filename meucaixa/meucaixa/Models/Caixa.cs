@@ -3,11 +3,8 @@ using System.Collections.ObjectModel;
 
 namespace meucaixa.Models
 {
-    public class Caixa
+    public class Caixa : EntityBase
     {
-        [SQLite.PrimaryKey]
-        [SQLite.AutoIncrement]
-        public int Id { get; set; }
         public DateTime DataCaixa { get; set; } = DateTime.Now;
         public string Notas2 { get; set; }
         public int TotalNotas2 { get; set; }

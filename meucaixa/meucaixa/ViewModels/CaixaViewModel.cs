@@ -17,7 +17,7 @@ namespace meucaixa.ViewModels
         private bool _isBusy = false;
         private readonly Caixa _caixa;
         private readonly ICaixa _caixaService;
-        private readonly IDespesas _despesasService;
+        private readonly IDespesa _despesaService;
         private string _totalDespesas;
         private readonly FormataDinheiro _formataDinheiro;
 
@@ -36,10 +36,11 @@ namespace meucaixa.ViewModels
             RemoveDespesaCommand = new Command<Despesa>(async (despesa) => await RemoveDespesa(despesa));
             SalvarCaixaCommand = new Command(async () => await SalvaDespesa(), () => !IsBusy);
 
+
             using (AsyncScopedLifestyle.BeginScope(App.IoCContainer))
             {
                 _caixaService = App.IoCContainer.GetInstance<ICaixa>();
-                _despesasService = App.IoCContainer.GetInstance<IDespesas>();
+                _despesaService = App.IoCContainer.GetInstance<IDespesa>();
             }
             _snackbar = DependencyService.Get<ISnackbar>();
 
@@ -75,7 +76,7 @@ namespace meucaixa.ViewModels
             try
             {
                 await _caixaService.SalvaCaixa(_caixa);
-                await _despesasService.SalvaDespesasAsync(_caixa);
+                await _despesaService.SalvaDespesasAsync(_caixa);
                 _snackbar.MostraSnackbarCurto("Caixa lançado com sucesso!");
             }
             catch (Exception e)
@@ -125,7 +126,7 @@ namespace meucaixa.ViewModels
             total = TotalNotas2 + TotalNotas5 + TotalNotas10 + TotalNotas20 + TotalNotas50 + TotalNotas100 + totalStelo + totalCielo;
             totalMenosDespesas = total - Despesas.Sum(d => Convert.ToDecimal(d.Valor));
             totalMenosDespesasProximoCaixa = totalMenosDespesas - valorAberturaCaixa;
-            if(totalMenosDespesas <= 0)
+            if (totalMenosDespesas <= 0)
             {
                 CorTotalMenosDespesa = Color.Red;
             }
@@ -363,7 +364,8 @@ namespace meucaixa.ViewModels
         public Color CorTotalMenosDespesa
         {
             get => _corTotalMenosDespesa;
-            set {
+            set
+            {
                 _corTotalMenosDespesa = value;
                 OnPropertyChanged();
             }
