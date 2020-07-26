@@ -8,7 +8,8 @@
              x:Class="meucaixa.Views.HistoricoPage">
     <ContentPage.Content>
         <StackLayout>
-            <charts:ChartView Chart="{Binding Charts}" HeightRequest="500"/>
+            
+            <charts:ChartView Chart="{Binding Chart}" HeightRequest="350" x:Name="chartView"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

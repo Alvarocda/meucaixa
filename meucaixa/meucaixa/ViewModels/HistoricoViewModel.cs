@@ -2,6 +2,7 @@
 using meucaixa.Models;
 using Microcharts;
 using SimpleInjector.Lifestyles;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,56 +13,58 @@ namespace meucaixa.ViewModels
 {
     public class HistoricoViewModel : BaseViewModel
     {
-        ObservableCollection<ChartEntry> _chartEntries;
         readonly ICaixa _caixaService;
-        readonly IDespesa _despesaService;
-        BarChart _charts;
+        Chart _chart;
         public HistoricoViewModel()
         {
-            ChartsEntries = new ObservableCollection<ChartEntry>();
             using (AsyncScopedLifestyle.BeginScope(App.IoCContainer))
             {
                 _caixaService = App.IoCContainer.GetInstance<ICaixa>();
-                _despesaService = App.IoCContainer.GetInstance<IDespesa>();
             }
-            Task.Run(async () => await CarregaCaixas());
-        }
-
-        private async Task CarregaCaixas()
-        {
-            List<Caixa> caixas = await _caixaService.ListaCaixas(DateTime.Now.Month);
-            foreach(Caixa cx in caixas)
+            Task.Run(async () =>
             {
-                float valorTotal = 0.0f;
+                await CarregaDespesas();
+            });
+        }
+        private async Task CarregaDespesas()
+        {
+            List<Caixa> caixas = await _caixaService.ListaCaixas();
+            List<ChartEntry> chartEntries = new List<ChartEntry>();
+            
+            foreach (Caixa cx in caixas)
+            {
+                float total = 0.0f;
                 try
                 {
-                    valorTotal = float.Parse(cx.TotalMenosDespesasMenosProximoCaixa);
+                    total = float.Parse(cx.TotalMenosDespesasMenosProximoCaixa);
                 }
-                catch (Exception)
+                finally
                 {
-
+                    chartEntries.Add(
+                        new ChartEntry(total)
+                        {
+                            Label = cx.DataCaixa.ToString("dd/MM/yyyy"),
+                            ValueLabel = $"R$ {cx.TotalMenosDespesasMenosProximoCaixa}",
+                            Color = total < 0.0f ? SKColor.Parse("#FF3366") : SKColor.Parse("#28502E")
+                        }
+                    );
+                    Chart = new BarChart
+                    {
+                        Entries = chartEntries,
+                        LabelTextSize = 45,
+                        ValueLabelOrientation = Orientation.Horizontal,
+                        Margin = 60
+                    };
                 }
-                ChartsEntries.Add(new ChartEntry(valorTotal) { Label = cx.DataCaixa.ToString("dd/MM/yyyy"), ValueLabel = valorTotal.ToString()});
-            }
-            Charts = new BarChart() { Entries = ChartsEntries };
-        }
-
-        public BarChart Charts
-        {
-            get => _charts;
-            set
-            {
-                _charts = value;
-                OnPropertyChanged();
             }
         }
 
-        public ObservableCollection<ChartEntry> ChartsEntries
+        public Chart Chart
         {
-            get => _chartEntries;
+            get => _chart;
             set
             {
-                _chartEntries = value;
+                _chart = value;
                 OnPropertyChanged();
             }
         }
